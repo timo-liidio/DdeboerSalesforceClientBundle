@@ -7,6 +7,7 @@ use Ddeboer\Salesforce\ClientBundle\Response;
 use Ddeboer\Salesforce\ClientBundle\Event;
 use Ddeboer\Salesforce\ClientBundle\Soap\SoapClient;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Ddeboer\Salesforce\ClientBundle\Exception\SaveException;
 
 /**
  * A client for the Salesforce SOAP API
@@ -463,7 +464,9 @@ class Client implements ClientInterface
                 }
                 $errorMessage .= ': ' . $error->message . "\n" . json_encode($result->errors);
 
-                throw new \InvalidArgumentException($errorMessage);
+                $saveException = new SaveException($errorMessage);
+                $saveException->setResults($results->result);
+                throw $saveException;
             }
         }
     }
